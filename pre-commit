@@ -1,52 +1,27 @@
 #!/bin/bash
+cd "$(git rev-parse --show-toplevel)"
+ESLINT="node_modules/.bin/eslint"
+pwd
 
-# BAECKEND ESLINT CHECK
-###########################
-BACKEND_STAGED_FILES=($(git diff --diff-filter=d --cached --name-only ./server | grep -E '^.*src\/.*\.(js|jsx|tsx|ts)$'))
-
-echo $BACKEND_STAGED_FILES
-STAGED_FILES=$BACKEND_STAGED_FILES
-
-for i in "${!STAGED_FILES[@]}"; do
-  DATA=${STAGED_FILES[$i]}
-  pattern="server/"
-  DATA=${DATA/$pattern/}
-  STAGED_FILES[$i]=$DATA
-done
-
-npm run lint "${STAGED_FILES[@]}" --fix
-
-ESLINT_EXIT="$?"
-
-# Re-add files since they may have been fixed
-git add "${BACKEND_STAGED_FILES[@]}"
-
-if [[ "${ESLINT_EXIT}" == 0 ]]; then
-  echo ""
-else
-  printf "\n\033[41mCOMMIT FAILED:\033[0m Fix eslint errors and try again\n"
+if [[ ! -x "$ESLINT" ]]; then
+  printf "\t\033[41mPlease install ESlint\033[0m (npm install eslint)\n"
   exit 1
 fi
 
-# FRONTEND ESLINT CHECK
-###########################
-FRONTEND_STAGED_FILES=($(git diff --diff-filter=d --cached --name-only ./client | grep -E '^.*src\/.*\.(js|jsx|tsx|ts)$'))
+STAGED_FILES=($(git diff --cached --name-only --diff-filter=ACM | grep ".jsx\{0,1\}$"))
 
-echo $FRONTEND_STAGED_FILES
-STAGED_FILES=$FRONTEND_STAGED_FILES
-for i in "${!STAGED_FILES[@]}"; do
-  DATA=${STAGED_FILES[$i]}
-  pattern="client/"
-  DATA=${DATA/$pattern/}
-  STAGED_FILES[$i]=$DATA
-done
+echo "ESLint'ing ${#STAGED_FILES[@]} files"
 
-npm run lint --prefix ./client -- "${STAGED_FILES[@]}" --fix
+if [[ "$STAGED_FILES" = "" ]]; then
+  exit 0
+fi
+
+$ESLINT "${STAGED_FILES[@]}" --fix
 
 ESLINT_EXIT="$?"
 
 # Re-add files since they may have been fixed
-git add "${FRONTEND_STAGED_FILES[@]}"
+git add "${STAGED_FILES[@]}"
 
 if [[ "${ESLINT_EXIT}" == 0 ]]; then
   printf "\n\033[42mCOMMIT SUCCEEDED\033[0m\n"
