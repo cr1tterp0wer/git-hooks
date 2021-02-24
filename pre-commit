@@ -10,7 +10,7 @@ if [[ ! -x "$ESLINT" ]]; then
 fi
 
 SERVER_FILES=($(git diff --cached --name-only --diff-filter=ACM ./server | grep ".jsx\{0,1\}$"))
-CLIENT_FILES=($(git diff --cached --name-only --diff-filter=ACM ./client | grep -E "(.css)|(.scss)|(.vue)|(.jsx{0,1})"))
+CLIENT_FILES=($(git diff --cached --name-only --diff-filter=ACM ./client | grep -E "(.css)$|(.scss)$|(.vue)$|(.jsx{0,1}$)"))
 
 echo "ESLint'ing ${#SERVER_FILES[@]} files"
 
