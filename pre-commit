@@ -14,7 +14,7 @@ for i in "${!STAGED_FILES[@]}"; do
   STAGED_FILES[$i]=$DATA
 done
 
-npm run lint -- "${STAGED_FILES[@]}" --fix
+npm run lint "${STAGED_FILES[@]}" --fix
 
 ESLINT_EXIT="$?"
 
