@@ -1,20 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 
 # BAECKEND ESLINT CHECK
 ###########################
-BACKEND_STAGED_FILES=($(git diff --diff-filter=d --cached --name-only ./backend | grep -E '^.*src\/.*\.(js|jsx|tsx|ts)$'))
+BACKEND_STAGED_FILES=($(git diff --diff-filter=d --cached --name-only ./server | grep -E '^.*src\/.*\.(js|jsx|tsx|ts)$'))
 
 echo $BACKEND_STAGED_FILES
 STAGED_FILES=$BACKEND_STAGED_FILES
 
 for i in "${!STAGED_FILES[@]}"; do
   DATA=${STAGED_FILES[$i]}
-  pattern="backend/"
+  pattern="server/"
   DATA=${DATA/$pattern/}
   STAGED_FILES[$i]=$DATA
 done
 
-npm run lint --prefix ./backend -- "${STAGED_FILES[@]}" --fix
+npm run lint -- "${STAGED_FILES[@]}" --fix
 
 ESLINT_EXIT="$?"
 
@@ -30,18 +30,18 @@ fi
 
 # FRONTEND ESLINT CHECK
 ###########################
-FRONTEND_STAGED_FILES=($(git diff --diff-filter=d --cached --name-only ./frontend | grep -E '^.*src\/.*\.(js|jsx|tsx|ts)$'))
+FRONTEND_STAGED_FILES=($(git diff --diff-filter=d --cached --name-only ./client | grep -E '^.*src\/.*\.(js|jsx|tsx|ts)$'))
 
 echo $FRONTEND_STAGED_FILES
 STAGED_FILES=$FRONTEND_STAGED_FILES
 for i in "${!STAGED_FILES[@]}"; do
   DATA=${STAGED_FILES[$i]}
-  pattern="frontend/"
+  pattern="client/"
   DATA=${DATA/$pattern/}
   STAGED_FILES[$i]=$DATA
 done
 
-npm run lint --prefix ./frontend -- "${STAGED_FILES[@]}" --fix
+npm run lint --prefix ./client -- "${STAGED_FILES[@]}" --fix
 
 ESLINT_EXIT="$?"
 
